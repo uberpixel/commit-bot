@@ -1,0 +1,18 @@
+#!/bin/bash
+
+ABSOLUTE_PATH=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)/`basename "${BASH_SOURCE[0]}"`
+ABSOLUTE_PATH=$(readlink -f $ABSOLUTE_PATH)
+BOTDIR=$(dirname $ABSOLUTE_PATH)
+
+PWD=`pwd`
+REPO=`basename "$PWD" | sed s/\.git$//`
+
+while read oldrev newrev ref
+do
+	PWD=`pwd`
+	REPO=`basename "$PWD" | sed s/\.git$//`
+	BRANCH=$(git rev-parse --symbolic --abbrev-ref $ref)
+
+	CMD="$BOTDIR/daemon.py -o $oldrev -n $newrev -b $BRANCH -g $PWD -x $REPO"
+	$CMD
+done
